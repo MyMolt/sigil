@@ -1,10 +1,10 @@
 [package]
 name = "sigil-protocol"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "SIGIL — Sovereign Identity-Gated Interaction Layer. An open protocol for securing AI agent-to-tool interactions."
 license = "EUPL-1.2"
-license-file = ["LICENSE", "LICENSE-COMMERCIAL"]
+# Commercial licence available — see LICENSE-COMMERCIAL or https://sigil-protocol.org
 repository = "https://github.com/sigil-eu/sigil"
 homepage = "https://sigil-protocol.org"
 documentation = "https://docs.rs/sigil-protocol"
