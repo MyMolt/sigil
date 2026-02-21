@@ -175,7 +175,158 @@ impl SigilEnvelope {
 
         Ok(verifying_key.verify(&canonical, &signature).is_ok())
     }
+
+    /// Verify this envelope end-to-end against a live SIGIL Registry.
+    ///
+    /// This method:
+    /// 1. Calls `GET {registry_url}/resolve/{did}` to fetch the DID document.
+    /// 2. Rejects the envelope if the DID is unknown (`404`) or revoked.
+    /// 3. Uses the **registry-resolved** public key to verify the Ed25519 signature.
+    ///
+    /// This is the **authoritative** verification path — it catches compromised or
+    /// revoked keys that a local-only `verify()` call cannot detect.
+    ///
+    /// # Feature gate
+    ///
+    /// This method is only available when compiled with `features = ["registry"]`.
+    /// Add to your `Cargo.toml`:
+    /// ```toml
+    /// sigil-protocol = { version = "0.1", features = ["registry"] }
+    /// ```
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// let result = envelope
+    ///     .verify_with_registry("https://registry.sigil-protocol.org")
+    ///     .await?;
+    /// assert!(result.valid);
+    /// assert_eq!(result.status, "active");
+    /// ```
+    #[cfg(feature = "registry")]
+    pub async fn verify_with_registry(
+        &self,
+        registry_url: &str,
+    ) -> Result<RegistryVerifyResult> {
+        // 1. Resolve the DID from the registry
+        let url = format!(
+            "{}/resolve/{}",
+            registry_url.trim_end_matches('/'),
+            urlencoding_encode(&self.identity)
+        );
+
+        let response = reqwest::get(&url)
+            .await
+            .map_err(|e| anyhow!("Registry request failed: {e}"))?;
+
+        let status_code = response.status();
+
+        if status_code == reqwest::StatusCode::NOT_FOUND {
+            return Ok(RegistryVerifyResult {
+                valid: false,
+                status: "not_found".into(),
+                reason: Some(format!("DID '{}' is not registered", self.identity)),
+                public_key: None,
+            });
+        }
+
+        if !status_code.is_success() {
+            return Err(anyhow!(
+                "Registry returned unexpected status {}: {}",
+                status_code,
+                url
+            ));
+        }
+
+        let record: RegistryRecord = response
+            .json()
+            .await
+            .map_err(|e| anyhow!("Failed to parse registry response: {e}"))?;
+
+        // 2. Reject revoked identities immediately
+        if record.status == "revoked" {
+            return Ok(RegistryVerifyResult {
+                valid: false,
+                status: "revoked".into(),
+                reason: Some(format!(
+                    "DID '{}' has been revoked{}",
+                    self.identity,
+                    record
+                        .revoked_at
+                        .map(|t| format!(" at {t}"))
+                        .unwrap_or_default()
+                )),
+                public_key: Some(record.public_key),
+            });
+        }
+
+        // 3. Verify the Ed25519 signature using the registry's public key
+        let sig_valid = self.verify(&record.public_key)?;
+
+        Ok(RegistryVerifyResult {
+            valid: sig_valid,
+            status: record.status,
+            reason: if sig_valid {
+                None
+            } else {
+                Some("Ed25519 signature verification failed".into())
+            },
+            public_key: Some(record.public_key),
+        })
+    }
 }
+
+// ── Registry types ────────────────────────────────────────────────────────────
+
+/// DID document returned by `GET /resolve/:did` on a SIGIL Registry.
+#[derive(Debug, Deserialize)]
+pub struct RegistryRecord {
+    pub did: String,
+    pub status: String,
+    pub public_key: String,
+    pub namespace: String,
+    pub label: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+    pub revoked_at: Option<String>,
+}
+
+/// Result of [`SigilEnvelope::verify_with_registry`].
+#[derive(Debug)]
+pub struct RegistryVerifyResult {
+    /// `true` if the DID is active and the signature is cryptographically valid.
+    pub valid: bool,
+    /// DID status from the registry: `"active"` or `"revoked"`.
+    pub status: String,
+    /// Human-readable explanation when `valid = false`.
+    pub reason: Option<String>,
+    /// The base64url public key from the registry (useful for caching).
+    pub public_key: Option<String>,
+}
+
+// ── URL encoding helper (no dep needed) ──────────────────────────────────────
+
+fn urlencoding_encode(s: &str) -> String {
+    s.chars()
+        .flat_map(|c| match c {
+            'A'..='Z' | 'a'..='z' | '0'..='9' | '-' | '_' | '.' | '~' => {
+                vec![c]
+            }
+            c => {
+                let mut buf = [0u8; 4];
+                let bytes = c.encode_utf8(&mut buf);
+                bytes.bytes().flat_map(|b| {
+                    vec![
+                        '%',
+                        char::from_digit((b >> 4) as u32, 16).unwrap().to_ascii_uppercase(),
+                        char::from_digit((b & 0xf) as u32, 16).unwrap().to_ascii_uppercase(),
+                    ]
+                }).collect::<Vec<_>>()
+            }
+        })
+        .collect()
+}
+
 
 // ── SigilKeypair ─────────────────────────────────────────────────────────────
 
