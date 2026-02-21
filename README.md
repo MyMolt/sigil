@@ -26,6 +26,8 @@ AI agents execute real-world actions — reading emails, querying databases, sen
 
 **SIGIL fills this gap.**
 
+---
+
 ## What SIGIL Provides
 
 SIGIL defines 5 traits (interfaces) that any agent system can implement:
@@ -61,14 +63,36 @@ SIGIL defines 5 traits (interfaces) that any agent system can implement:
 
 Plus a **reference MCP server** (`SigilMcpServer`) that wraps any tool set with all five layers.
 
+---
+
 ## Quick Start
 
 ```toml
 [dependencies]
 sigil-protocol = "0.1"
+
+# To auto-fetch community scanner patterns from the live registry:
+sigil-protocol = { version = "0.1", features = ["registry"] }
 ```
 
-### Implement a Scanner
+### Option A — Auto-fetch community patterns (recommended)
+
+```rust
+use sigil_protocol::RemoteScanner;
+
+// Downloads 43+ verified patterns from registry.sigil-protocol.org
+// Falls back to built-in patterns if registry is unreachable (5s timeout)
+let scanner = RemoteScanner::from_registry().await?;
+
+println!("Loaded {} rules from: {:?}", scanner.rule_count(), scanner.source());
+
+if let Some(hit) = scanner.scan("Authorization: Bearer sk-abc...") {
+    println!("Sensitive content: {hit}");
+    // → "Sensitive content: [SIGIL-VAULT: OPENAI_KEY]"
+}
+```
+
+### Option B — Bring your own scanner
 
 ```rust
 use sigil_protocol::SensitivityScanner;
@@ -121,6 +145,35 @@ server.register_tool_with_trust(banking_tool, TrustLevel::High);
 // Low-trust caller tries to use it → DENIED + audit logged
 ```
 
+---
+
+## 🌐 Live Registry — registry.sigil-protocol.org
+
+SIGIL ships with a **community-curated registry** of scanner patterns and security policies, hosted at [`registry.sigil-protocol.org`](https://registry.sigil-protocol.org).
+
+| | Count | What |
+|---|---|---|
+| ✅ | **43** | Verified scanner patterns (AWS, OpenAI, GitHub, Stripe, Slack, IBAN, EU PII…) |
+| ✅ | **35** | Security policies (`execute_sql`, `read_file`, `install_package`, `spawn_subprocess`…) |
+| 🔑 | DID Registry | `did:sigil:` identifiers resolved over HTTPS with TLS 1.3 |
+
+### Categories covered
+
+| Category | Examples |
+|---|---|
+| `credential` | AWS keys, OpenAI, GitHub PAT, Stripe live keys, Slack tokens, Shopify, Cloudflare |
+| `secret` | Private keys (PEM), database URLs, HashiCorp Vault tokens, Twilio Auth Token |
+| `pii` | Email, phone, IBAN, credit card — plus FR INSEE, NL BSN, ES NIF/NIE, IT Codice Fiscale |
+| `financial` | IBAN, credit/debit card numbers (PCI-DSS) |
+
+### Contribute a pattern
+
+Via the [web form](https://sigil-protocol.org/registry.html) (signs with your `did:sigil:` in-browser) or directly via the API — no account needed, just a registered DID.
+
+→ Full API docs: **[sigil-protocol.org/registry.html](https://sigil-protocol.org/registry.html)**
+
+---
+
 ## MCP Extension
 
 SIGIL extends MCP JSON-RPC with a `_sigil` metadata field:
@@ -149,6 +202,8 @@ Responses are scanned automatically:
 }
 ```
 
+---
+
 ## Conformance Levels
 
 | Level | Requirements | Use Case |
@@ -156,6 +211,20 @@ Responses are scanned automatically:
 | **SIGIL-Core** | Identity + Audit | Minimum — who did what, when |
 | **SIGIL-Guard** | Core + Scanner + Vault | Full interception — sensitive data never leaks |
 | **SIGIL-MCP** | Guard + MCP Server | Agent tool security — every tool call is gated |
+
+---
+
+## Ecosystem
+
+| Component | Status | Links |
+| --- | --- | --- |
+| **Rust crate** (`sigil-protocol`) | ✅ v0.1.5 | [crates.io](https://crates.io/crates/sigil-protocol) · [docs.rs](https://docs.rs/sigil-protocol) |
+| **Registry** (`registry.sigil-protocol.org`) | ✅ Live · Frankfurt EU | [API](https://registry.sigil-protocol.org/health) · [Docs](https://sigil-protocol.org/registry.html) |
+| **TypeScript SDK** (`sigil-protocol` npm) | 🔜 npm publish soon | [`sigil-ts/`](./sigil-ts/) |
+| **MyMolt** (reference platform) | ✅ SIGIL-MCP conformant | [github.com/beykuet/MyMolt](https://github.com/beykuet/MyMolt) |
+| **SIGIL Inspector UI** | 🔄 In progress | Visual envelope & audit log viewer |
+
+---
 
 ## Adoption
 
@@ -170,6 +239,8 @@ SIGIL integrates with any agent framework:
 | **Self-hosted AI** (Ollama, vLLM) | Add audit trails to local LLM tool usage |
 | **[MyMolt](https://github.com/beykuet/MyMolt)** | Reference implementation (SIGIL-MCP conformant) |
 
+---
+
 ## Specification
 
 1. [Overview](spec/01-overview.md) — Purpose, architecture, conformance levels
@@ -179,6 +250,8 @@ SIGIL integrates with any agent framework:
 5. [MCP Extension](spec/05-mcp-extension.md) — SIGIL as MCP security wrapper
 6. [Security Handshake](spec/06-handshake.md) — MCP initialization trust negotiation
 7. [Registry](spec/07-registry.md) — Distributed Scanners and Policies ecosystem
+
+---
 
 ## License
 
