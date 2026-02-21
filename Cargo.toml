@@ -4,6 +4,7 @@ version = "0.1.1"
 edition = "2021"
 description = "SIGIL — Sovereign Identity-Gated Interaction Layer. An open protocol for securing AI agent-to-tool interactions."
 license = "EUPL-1.2"
+license-file = ["LICENSE", "LICENSE-COMMERCIAL"]
 repository = "https://github.com/sigil-eu/sigil"
 homepage = "https://sigil-protocol.org"
 documentation = "https://docs.rs/sigil-protocol"

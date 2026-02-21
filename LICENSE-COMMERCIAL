@@ -1,0 +1,87 @@
+SIGIL PROTOCOL COMMERCIAL LICENSE
+
+Copyright (c) 2026 SIGIL Protocol — sigil-protocol.org
+All rights reserved.
+
+---
+
+## 1. Preamble
+
+SIGIL Protocol is dual-licensed. The source code is available under the open-source
+European Union Public Licence v1.2 (EUPL-1.2) for qualifying use cases. This
+Commercial Licence governs all other use cases.
+
+If you intend to use SIGIL Protocol in a proprietary, closed-source product or service,
+you must obtain a Commercial Licence.
+
+---
+
+## 2. Who Needs a Commercial Licence?
+
+You need a Commercial Licence if you:
+
+- Embed or integrate SIGIL Protocol into a **closed-source, proprietary product or SaaS**
+  without releasing your derived source code under EUPL-1.2.
+- Offer a **managed or hosted service** built on SIGIL Protocol to third parties.
+- Distribute a **compiled binary** including SIGIL Protocol code without disclosing
+  the corresponding source code.
+- Use SIGIL Protocol in a **patent-restricted context** where you cannot comply with
+  the patent grant provisions of EUPL-1.2.
+
+---
+
+## 3. Who Does NOT Need a Commercial Licence?
+
+You do NOT need a Commercial Licence if you:
+
+- Use SIGIL Protocol in an **open-source project** published under a compatible
+  open-source licence (see the EUPL-1.2 compatibility appendix: GPL, AGPL, MPL, LGPL, etc.)
+- Use SIGIL Protocol for **personal experimentation, research, or internal evaluation**.
+- Contribute to SIGIL Protocol under the EUPL-1.2 terms.
+
+---
+
+## 4. Commercial Licence Terms
+
+### 4.1 Grant of Rights
+Subject to payment of the applicable licence fee and compliance with this Agreement,
+SIGIL Protocol grants you a non-exclusive, non-transferable, worldwide licence to:
+
+- Use, reproduce, and distribute SIGIL Protocol in your proprietary products.
+- Deploy SIGIL Protocol in production environments without open-sourcing your application.
+
+### 4.2 Restrictions
+You may not:
+
+- Sublicense, resell, or transfer the Commercial Licence to any third party.
+- Use the SIGIL name, brand, or logo without separate written permission.
+- Remove or obscure any copyright notices.
+
+### 4.3 Patent Rights
+This Commercial Licence includes a limited grant of patent rights for the methods
+described in the SIGIL Protocol specification (the `_sigil` envelope, per-message
+DID-based policy verdict system). Patent rights are granted solely for use within
+the scope of this Commercial Licence and do not extend beyond the duration of the
+licence agreement.
+
+---
+
+## 5. Warranty and Liability
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+SIGIL PROTOCOL SHALL NOT BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THE SOFTWARE.
+
+---
+
+## 6. Obtaining a Commercial Licence
+
+To obtain a Commercial Licence, contact:
+
+**SIGIL Protocol**
+📧 info@sigil-protocol.org
+🌐 https://sigil-protocol.org
+
+---
+
+*This licence is governed by the laws of the European Union and the applicable law
+of the country where the Licensor is registered.*

@@ -6,7 +6,8 @@
 <p align="center">The missing security layer for AI agent-to-tool interactions.</p>
 
 <p align="center">
-  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/license-EUPL%20v1.2-blue.svg" alt="License"></a>
+  <a href="https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12"><img src="https://img.shields.io/badge/license-EUPL%20v1.2-blue.svg" alt="License EUPL-1.2"></a>
+  <a href="https://github.com/sigil-eu/sigil/blob/main/LICENSE-COMMERCIAL"><img src="https://img.shields.io/badge/license-Commercial-orange.svg" alt="Commercial License"></a>
   <a href="https://github.com/sigil-eu/sigil/actions"><img src="https://github.com/sigil-eu/sigil/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://crates.io/crates/sigil-protocol"><img src="https://img.shields.io/crates/v/sigil-protocol.svg" alt="crates.io"></a>
   <a href="https://docs.rs/sigil-protocol"><img src="https://docs.rs/sigil-protocol/badge.svg" alt="docs.rs"></a>
@@ -176,9 +177,19 @@ SIGIL integrates with any agent framework:
 3. [Interception](spec/03-interception.md) — Scanner, vault envelope, opaque pointers
 4. [Audit](spec/04-audit.md) — Event schema, tamper evidence
 5. [MCP Extension](spec/05-mcp-extension.md) — SIGIL as MCP security wrapper
+6. [Security Handshake](spec/06-handshake.md) — MCP initialization trust negotiation
+7. [Registry](spec/07-registry.md) — Distributed Scanners and Policies ecosystem
 
 ## License
 
-**EUPL-1.2** — [European Union Public Licence v. 1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
+SIGIL Protocol is **dual-licensed**:
 
-SIGIL is OSI-approved open source. You can use it as a library dependency in any project — including proprietary ones. Only modifications to SIGIL itself must be shared back.
+- **Open Source (EUPL-1.2):** Free for open-source projects and personal use.
+  See [`LICENSE`](./LICENSE).
+- **Commercial:** Required for proprietary or closed-source applications.
+  See [`LICENSE-COMMERCIAL`](./LICENSE-COMMERCIAL) or contact
+  [info@sigil-protocol.org](mailto:info@sigil-protocol.org).
+
+> **Note:** Using SIGIL as a library dependency in a proprietary project
+> does NOT automatically require a commercial licence, provided you do not
+> modify and redistribute SIGIL itself in closed-source form.
