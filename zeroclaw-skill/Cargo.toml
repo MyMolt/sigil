@@ -1,0 +1,43 @@
+[package]
+name = "sigil-zeroclaw"
+version = "0.1.0"
+edition = "2021"
+description = "SIGIL security layer plugin for ZeroClaw — scans MCP tool calls for secrets and enforces policies"
+license = "EUPL-1.2"
+repository = "https://github.com/sigil-eu/sigil"
+homepage = "https://sigil-protocol.org"
+keywords = ["sigil", "zeroclaw", "mcp", "security", "ai-agent"]
+categories = ["authentication", "cryptography"]
+
+[lib]
+name = "sigil_zeroclaw"
+crate-type = ["rlib"]
+
+[dependencies]
+# SIGIL core — scanner, policy, audit
+sigil-protocol = "0.1"
+
+# ZeroClaw plugin interface
+# zeroclaw = { git = "https://github.com/zeroclaw-labs/zeroclaw", optional = true }
+
+# Async runtime
+tokio = { version = "1", features = ["rt", "macros"] }
+async-trait = "0.1"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Logging
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+# Enable when zeroclaw crate is available
+zeroclaw-native = []
