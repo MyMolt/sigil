@@ -15,16 +15,6 @@
 
 ---
 
-<p align="center">
-  <a href="https://sigil-protocol.org" target="_blank">
-    <img src="https://sigil-eu.github.io/assets/sigil-demo-poster.png" alt="SIGIL Protocol — live demo" width="900" style="border-radius:12px;">
-  </a>
-  <br/>
-  <em>▶ <a href="https://sigil-protocol.org">Watch the live demo on sigil-protocol.org</a> — autoplay video with tab-switching quick-start</em>
-</p>
-
----
-
 ## The Problem
 
 AI agents execute real-world actions — reading emails, querying databases, sending money. The dominant protocol for this (MCP) has **no built-in security layer**:
