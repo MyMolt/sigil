@@ -65,6 +65,15 @@ Plus a **reference MCP server** (`SigilMcpServer`) that wraps any tool set with 
 
 ---
 
+## Community Integrations
+
+| Runtime | Type | Description |
+|---|---|---|
+| [OpenClaw](https://github.com/sigil-eu/sigil/tree/main/openclaw-skill) | SKILL.md | Drop-in skill for OpenClaw — scans MCP tool calls, enforces policies, writes audit log. No code required. |
+| [ZeroClaw](https://github.com/sigil-eu/sigil/tree/main/zeroclaw-skill) | Rust crate (`sigil-zeroclaw`) | Implements ZeroClaw `Tool` + `Observability` traits. Three modes: standalone scan tool, transparent gate wrapper, or automatic per-turn observability hook. |
+
+---
+
 ## Quick Start
 
 ```toml
