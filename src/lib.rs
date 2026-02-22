@@ -29,7 +29,7 @@ pub mod sigil_envelope;
 pub mod vault;
 
 // Re-export core types
-pub use audit::{AuditEvent, AuditEventType, AuditLogger};
+pub use audit::{AuditEvent, AuditEventType, AuditLogger, FileAuditLogger, NullAuditLogger};
 pub use identity::{IdentityBinding, IdentityProvider, TrustLevel};
 pub use policy::{RiskLevel, SecurityPolicy};
 pub use scanner::SensitivityScanner;

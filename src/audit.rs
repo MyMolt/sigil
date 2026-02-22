@@ -163,6 +163,93 @@ pub trait AuditLogger: Send + Sync {
     fn log(&self, event: &AuditEvent) -> anyhow::Result<()>;
 }
 
+// ── Concrete implementation: append-only JSONL file ─────────────────────────
+
+use std::fs::{File, OpenOptions};
+use std::io::Write;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+
+/// A concrete [`AuditLogger`] that writes one JSON-Lines record per event to
+/// an append-only file.
+///
+/// **Security properties:**
+/// - Metadata only — the matched secret value is **never** written, only
+///   `pattern_name`, `severity`, hit count, actor, tool, and timestamp.
+/// - Each line is self-contained JSON, making it easy to stream to a SIEM.
+/// - The log file path should be on a filesystem with restricted write access
+///   (e.g. only the service user can write, root can read).
+///
+/// # Example
+/// ```rust,no_run
+/// use sigil_protocol::audit::{FileAuditLogger, AuditLogger, AuditEvent, AuditEventType};
+///
+/// let logger = FileAuditLogger::open("/var/log/sigil/audit.jsonl").unwrap();
+/// let event = AuditEvent::new(AuditEventType::SigilInterception)
+///     .with_actor("mcp".into(), Some("did:sigil:agent_abc".into()), None)
+///     .with_action("Redacted aws_access_key_id".into(), "critical".into(), false, true);
+/// logger.log(&event).unwrap();
+/// ```
+pub struct FileAuditLogger {
+    path: PathBuf,
+    file: Mutex<File>,
+}
+
+impl FileAuditLogger {
+    /// Open (or create) the audit log at `path`.
+    ///
+    /// The file is opened in append mode so existing records are never
+    /// overwritten. Parent directories must already exist.
+    pub fn open<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
+        let path = path.as_ref().to_path_buf();
+        let file = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)
+            .map_err(|e| anyhow::anyhow!("Cannot open audit log {:?}: {}", path, e))?;
+        Ok(Self {
+            path,
+            file: Mutex::new(file),
+        })
+    }
+
+    /// Return the path of the underlying log file.
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+}
+
+impl AuditLogger for FileAuditLogger {
+    /// Serialise `event` as a single JSON line and append it to the log file.
+    ///
+    /// The call acquires an in-process mutex, making it safe to share the
+    /// logger across threads via `Arc<FileAuditLogger>`.
+    fn log(&self, event: &AuditEvent) -> anyhow::Result<()> {
+        let line = serde_json::to_string(event)
+            .map_err(|e| anyhow::anyhow!("Failed to serialise audit event: {}", e))?;
+        let mut file = self
+            .file
+            .lock()
+            .map_err(|_| anyhow::anyhow!("Audit log mutex poisoned"))?;
+        writeln!(file, "{}", line)
+            .map_err(|e| anyhow::anyhow!("Failed to write audit log: {}", e))?;
+        file.flush()
+            .map_err(|e| anyhow::anyhow!("Failed to flush audit log: {}", e))?;
+        Ok(())
+    }
+}
+
+/// A no-op [`AuditLogger`] that discards all events.
+///
+/// Useful for testing or when audit logging is explicitly not required.
+pub struct NullAuditLogger;
+
+impl AuditLogger for NullAuditLogger {
+    fn log(&self, _event: &AuditEvent) -> anyhow::Result<()> {
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
