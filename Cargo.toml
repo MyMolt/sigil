@@ -2,7 +2,7 @@
 name = "sigil-protocol"
 version = "0.1.5"
 edition = "2021"
-description = "SIGIL — Sovereign Identity-Gated Interaction Layer. An open protocol for securing AI agent-to-tool interactions."
+description = "SIGIL — Sovereign Identity-Gated Interaction Layer. A modular security protocol for identity binding, optional content redaction, and tamper-evident audit in any networked caller-executor interaction."
 license = "EUPL-1.2"
 # Commercial licence available — see LICENSE-COMMERCIAL or https://sigil-protocol.org
 repository = "https://github.com/sigil-eu/sigil"
@@ -34,3 +34,6 @@ registry = ["dep:reqwest", "dep:regex", "dep:tracing"]
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+hmac  = "0.12"
+sha2  = "0.10"
+regex = "1"
