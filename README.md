@@ -283,7 +283,7 @@ SIGIL Protocol is **dual-licensed**:
 
 **Patent Pending** — German Utility Model (*Gebrauchsmuster*) filed with the DPMA.
 
-> Priority date: **2026-02-23** · Applicant: Benjamin Küttner  
+> Priority date: **2026-02-23** · Applicant: XXXX  
 > Invention: *Modular Security Protocol for Identity Binding, Rule-Based Content Redaction and Tamper-Evident Audit Logging in Networked Systems (SIGIL — Sovereign Identity-Gated Interaction Layer)*
 
 See [`PATENT-PRIORITY.md`](../PATENT-PRIORITY.md) for full priority documentation.
